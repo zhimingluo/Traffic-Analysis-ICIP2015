@@ -4,7 +4,7 @@ run(fullfile('D:/Toolbox/matconvnet-1.0-beta7', '/matlab/vl_setupnn.m')) ;
 
 net = load(fullfile('D:\Toolbox\matconvnet-pretrain-model',Model));
 
-hists = cell(400,1);
+imgFeatures = cell(400,1);
 
 ReLU = 1;
 
@@ -20,13 +20,13 @@ for ii = 1:400
     % run the CNN
     res = vl_simplenn(net, im_) ;
     if ReLU == 1
-        hist = squeeze(gather(res(end-2).x));
+        imgFeature = squeeze(gather(res(end-2).x));
     else
-        hist = squeeze(gather(res(end-3).x));
+        imgFeature = squeeze(gather(res(end-3).x));
     end
-    hists{ii} = snorm(hist);
+    imgFeatures{ii} = snorm(imgFeature);
 end
 
-hist = cat(2,hists{:});
+imgFeatures = cat(2,imgFeatures{:});
 
-save(sprintf('Deep_Feature/%s.mat',Model),'hist');
+save(sprintf('Deep_Feature/Feature_%s.mat',Model),'imgFeatures');

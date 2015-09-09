@@ -1,7 +1,7 @@
-Model = 'imagenet-caffe-ref';
-%Model = 'imagenet-vgg-f';
+%Model = 'imagenet-caffe-ref';
+Model = 'imagenet-vgg-f';
 
-FeaturePath = sprintf('Deep_Feature/%s.mat',Model);
+FeaturePath = sprintf('Deep_Feature/Feature_%s.mat',Model);
 
 if ~exist(FeaturePath,'file')
     DeepFeature(Model);
@@ -19,15 +19,15 @@ addpath('D:\Toolbox\liblinear-1.94\matlab');
 switch svm.kernel
     case 'linear'
     case 'hell'
-        hist = sign(hist) .* sqrt(abs(hist)) ;
+        imgFeatures = sign(imgFeatures) .* sqrt(abs(imgFeatures)) ;
     case 'chi2'
-        hist = vl_homkermap(hist,1,'kchi2') ;
+        imgFeatures = vl_homkermap(imgFeatures,1,'kchi2') ;
     case 'hik'
-        hist = vl_homkermap(hist,1,'kinters');
+        imgFeatures = vl_homkermap(imgFeatures,1,'kinters');
     otherwise
         assert(false) ;
 end
-hist = bsxfun(@times, hist, 1./sqrt(sum(hist.^2))) ;
+imgFeatures = bsxfun(@times, imgFeatures, 1./sqrt(sum(imgFeatures.^2))) ;
 
 for rr = 1:10
     
@@ -43,10 +43,10 @@ for rr = 1:10
         ts_index(ii) = str2num(testflist{ii});
     end
     
-    tr_fea = double(hist(:, tr_index));
+    tr_fea = double(imgFeatures(:, tr_index));
     [~,tr_label] = max(trainID,[],2);
     
-    ts_fea = double(hist(:,ts_index));
+    ts_fea = double(imgFeatures(:,ts_index));
     
     [~,ts_label] = max(testID,[],2);
     
@@ -65,7 +65,7 @@ for rr = 1:10
 end
 
 acc = zeros(1,numel(result));
-confuse = zeros(4:4);
+confuse = zeros(ncls:ncls);
 
 for ii = 1:numel(result)
     acc(ii) = result(ii).macc;
@@ -78,9 +78,10 @@ confuseM = confuse / numel(result);
 Result.res = result;
 Result.acc = mm;
 Result.confuseM = confuseM;
-
-fprintf('Mean Accuracy: %.2f\n',Result.acc*100);
+fprintf('\n\n------------------------------\n');
+fprintf('Mean Accuracy: %.2f%%\n',Result.acc*100);
+fprintf('------------------------------\n');
 % draw confusion matrice
 addpath('ConfusionMatrices/');
-title(titleStr);
-draw_cm(Result.confuseM,classes,4);
+figure();
+draw_cm(Result.confuseM,classes, ncls);
