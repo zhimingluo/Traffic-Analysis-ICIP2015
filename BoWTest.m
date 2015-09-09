@@ -1,7 +1,7 @@
-numWords = 256;
+numWords = 64;
 
 % VQ, fisher, VLAD, LLC
-type = 'VQ';
+type = 'fisher';
 
 LLC.knn = 5;
 LLC.beta = 1e-4;
@@ -12,18 +12,18 @@ pca.whiteningRegul = 0.01;
 pca.whitening = false;
 pca.renormalize = true;
 
-trained = 1;
+trained = 0;
 
 if trained == 0
     % visual words
     mkdir('visualwords');
-    %visualWords(type, numWords, pca);
+    visualWords(type, numWords, pca);
     
     % Coding
-    Image2Feature(type, numWords);
+    Image2Feature(type, numWords,pca);
 end
 
-
+addpath('D:\Toolbox\liblinear-1.94\matlab');
 svm.c = 1;
 %SVM
 svm.kernel = 'linear';
@@ -36,8 +36,10 @@ svm.kernel = 'hik';
 HIKRes = SVM_Classify(type, numWords, svm);
 
 fprintf('\n\n------------------------------\n');
+fprintf('Mean Accuracy\n');
+fprintf('Coding Method: %s, %d visual-words\n',type,numWords);
 fprintf('Linear Kernel: %.2f%%\n',LinRes.acc*100);
-fprintf('Hell Kernel  : %.2f%%\n',HellRes.acc*100);
-fprintf('Linear Kernel: %.2f%%\n',Chi2Res.acc*100);
-fprintf('Linear Kernel: %.2f%%\n',HIKRes.acc*100);
+fprintf('  Hell Kernel: %.2f%%\n',HellRes.acc*100);
+fprintf('  Chi2 Kernel: %.2f%%\n',Chi2Res.acc*100);
+fprintf('   HIK Kernel: %.2f%%\n',HIKRes.acc*100);
 fprintf('------------------------------\n');

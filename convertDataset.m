@@ -1,5 +1,3 @@
-function  convertDataset()
-
 PATH_TO_DATASET = 'Motorway';
 ROOTPATH = './';
 PATH_TO_IMAGES = fullfile(ROOTPATH, 'images');
@@ -47,23 +45,4 @@ for cvi = 1:10
     testID    = full(sparse(1:nnz(CV.training), ID(CV.training), 2, nnz(CV.training),ncls)) - 1;
     save(fullfile(PATH_TO_TrainTest, sprintf('cv_data_test%d.mat',cvi)), ...
         'classes','trainflist','trainID','vwtrainflist','vwtrainID','testflist','testID');
-end
-end
-
-function [ train,test ] = equalcvpartition( label,count )
-%EQUALCVPARTITION Summary of this function goes here
-%Detailed explanation goes here
-
-test=0*label;
-labelvec=unique(label);
-ss=0;
-for i=1:length(labelvec)
-    s=nnz(label==labelvec(i));
-    idx=randperm(s);
-    test(ss+idx(1:count))=1;
-    ss=ss+s;
-end
-test=test==1;
-train=~test;
-
 end
