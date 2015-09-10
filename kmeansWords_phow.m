@@ -1,4 +1,4 @@
-function Words = visualword_phow(images, numWords)
+function Words = kmeansWords_phow(images, numWords)
 
 samplesPerWord = 1000;
 
